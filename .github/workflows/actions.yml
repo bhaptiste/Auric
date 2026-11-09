@@ -20,7 +20,7 @@ jobs:
 
           Invoke-WebRequest $vsInstallerUrl -OutFile $vsInstallerPath
 
-          Start-Process -Wait -FilePath $vsInstallerPath -ArgumentList `
+          Start-Process -Wait -FilePath $vsInstallerUrl -ArgumentList `
             "--installPath `"$installDir`"", `
             "--add Microsoft.VisualStudio.Workload.VCTools", `
             "--includeRecommended", `
@@ -31,30 +31,27 @@ jobs:
         run: |
           call "C:\MyVS\VC\Auxiliary\Build\vcvars64.bat"
 
-      - name: Clone Auric
-        run: git clone https://github.com/twig6943/Auric.git
-
       - name: Build
         shell: cmd
         run: |
           call "C:\MyVS\VC\Auxiliary\Build\vcvars64.bat"
-          cmake -S Auric\ -B Auric\build -G "NMake Makefiles"
-          cmake --build Auric\build --config Release
+          cmake -S . -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
 
       - name: Upload Dll
         uses: actions/upload-artifact@v4
         with:
           name: DLL
-          path: D:/a/Auric/Auric/Auric/build/Kyber.dll
-          
+          path: build/Kyber.dll
+
       - name: Upload Launcher
         uses: actions/upload-artifact@v4
         with:
           name: Launcher
-          path: D:/a/Auric/Auric/Auric/build/Launcher/AuricLauncher.exe
+          path: build/Launcher/AuricLauncher.exe
 
       - name: Upload Installer
         uses: actions/upload-artifact@v4
         with:
           name: Installer
-          path: D:/a/Auric/Auric/Auric/build/Installer/KyberInstaller.exe
+          path: build/Installer/KyberInstaller.exe
